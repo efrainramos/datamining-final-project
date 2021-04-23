@@ -130,8 +130,8 @@ View(rc_df) #10 missing song lyrics
 
 
 ################################################################################
-## New Function to pull danceablitiy, etc.
-playlist_to_df_other <- function(playlist){
+## New Function to pull danceablitiy, etc. for final 4 playlist.
+plistayl_to_df_other <- function(playlist){
   
   #creates df of Track Names and Pop Score
   outputDF <- data.frame(playlist[["tracks"]][["items"]][["track.name"]],playlist[["tracks"]][["items"]][["track.popularity"]], playlist[["tracks"]][["items"]][["track.id"]])
@@ -157,8 +157,20 @@ playlist_to_df_other <- function(playlist){
       outputDF$lyrics[i] <- paste(unlist(lyric_list),collapse=' ')
       
     })
+    
   }
+  
+  #Adds additional track audio features to our data frame. key, energy, loudness, mode etc...
+  playID <- playlist[["id"]]
+  features_df <- get_playlist_audio_features("spotify",playID)
+  
+  mergedDF <- join(outputDF,features_df,by="track.id",type="left")
+  outputMerged <- mergedDF[,c(1,2,5,11,12,13,14,15,16,17, 18,19,20,21)]
+  
+  
+  return(outputMerged)
 }
+
 ################################################################################
 ## Word Cloud  -----
 
